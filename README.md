@@ -37,15 +37,35 @@
 pip install requests
 ```
 
-### 2. 获取Cookie
-1. 浏览器登录 https://www.chinapeixun.org.cn
-2. 按 F12 → Application → Cookies → 点击域名
-3. 找到 PHPSESSID，复制它的 Value 值
+### 2. 获取Cookie（详细步骤）
 
-**三种粘贴方式都支持：**
-- 只粘贴值：`bfs7okhp1i31kvfcnom5f2f22t`
-- 完整格式：`PHPSESSID=bfs7okhp1i31kvfcnom5f2f22t`
-- 整段Cookie：`PHPSESSID=xxx; play_token=yyy; ...`
+**第一步：登录网站**
+1. 用Chrome或Edge浏览器打开 https://www.chinapeixun.org.cn
+2. 输入账号密码登录，完成人脸验证
+3. 确认能看到"我的课程"页面，说明登录成功
+
+**第二步：打开开发者工具**
+1. 在页面任意位置按 `F12` 键（或右键 → 检查）
+2. 顶部切换到 **Application**（应用程序）标签
+3. 左侧找到 **Cookies** 文件夹，点击展开
+4. 点击下面的 `https://www.chinapeixun.org.cn`
+
+**第三步：复制PHPSESSID**
+1. 在右侧Cookie列表中，找到名为 **PHPSESSID** 的那一行
+2. 双击它的 **Value** 列，全选复制
+3. 只需要复制这一个值就够了
+
+---
+
+**三种粘贴方式都支持（任选一种）：**
+
+| 方式 | 示例（占位符） | 说明 |
+|------|--------------|------|
+| 只粘贴值 | `xxxxxxxxxxxxxxxxxxxx` | 最简单，直接粘贴复制的那串字符 |
+| 完整格式 | `PHPSESSID=xxxxxxxxxxxxxxxxxxxx` | 带key名也可以 |
+| 整段Cookie | `PHPSESSID=xxx; play_token=yyy; ...` | 从控制台 `document.cookie` 复制的整段也行 |
+
+> 💡 提示：v2.1版本已加自动预热，不需要特意点开课程再复制Cookie，登录后直接复制就行。
 
 ### 3. 运行脚本
 ```bash
