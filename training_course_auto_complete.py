@@ -170,11 +170,24 @@ class TrainingCourseAutoComplete:
         except Exception as e:
             return False, f"异常: {e}"
 
+    def _warmup_session(self):
+        """会话预热：访问课程列表页，触发服务器加载用户课程数据"""
+        try:
+            print("  🔄 正在初始化会话...")
+            # 先访问课程列表页，触发会话加载用户权限
+            self._request('GET', f"{self.base_url}/course.html")
+            time.sleep(0.3)
+        except Exception:
+            pass
+
     def run(self):
         """主运行函数"""
         print("=" * 60)
         print("培训网自动刷课工具")
         print("=" * 60)
+
+        # 0. 会话预热
+        self._warmup_session()
 
         # 1. 获取课程列表
         print("\n[1/3] 正在获取我的课程列表...")
