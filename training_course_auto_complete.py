@@ -26,6 +26,15 @@ class TrainingCourseAutoComplete:
         
     def _parse_cookies(self, cookies_str):
         """解析Cookie字符串并设置到session中"""
+        cookies_str = cookies_str.strip()
+        
+        # 智能识别：如果输入不包含=号，说明用户只复制了PHPSESSID的值
+        if '=' not in cookies_str and len(cookies_str) > 10:
+            print(f"  ℹ️  检测到只粘贴了Cookie值，自动识别为PHPSESSID")
+            self.session.cookies.set('PHPSESSID', cookies_str)
+            return
+        
+        # 正常解析 key=value; key2=value2 格式
         for item in cookies_str.split(';'):
             item = item.strip()
             if '=' in item:
@@ -35,8 +44,13 @@ class TrainingCourseAutoComplete:
     def get_my_courses(self):
         """获取我的课程列表"""
         url = f"{self.base_url}/member/home.html"
-        resp = self.session.get(url)
+        resp = self.session.get(url, allow_redirects=True)
         resp.encoding = 'utf-8'
+        
+        # 调试：检查是否被重定向到登录页
+        if 'login.html' in resp.url or '用户登录' in resp.text:
+            print("  ⚠️  检测到未登录状态，Cookie可能已过期或无效")
+            return []
         
         # 提取课程链接和名称
         courses = []
@@ -182,29 +196,23 @@ def main():
     print("培训网自动刷课工具")
     print("=" * 50)
     print()
-    print("使用方法：")
-    print("1. 先在浏览器登录 www.chinapeixun.org.cn")
-    print("2. 按 F12 打开开发者工具 → Application → Cookies")
-    print("3. 复制任意一个Cookie的完整值，或者直接粘贴")
-    print("   整个Cookie字符串（格式：key1=value1; key2=value2）")
+    print("【获取Cookie方法】")
+    print("1. 浏览器登录 www.chinapeixun.org.cn")
+    print("2. 按 F12 → Application → Cookies → 点击域名")
+    print("3. 找到 PHPSESSID，复制它的 Value 值")
     print()
-    print("提示：只需要包含 PHPSESSID 即可，")
-    print("其他Cookie（play_token、section_id等）会自动获取")
+    print("【两种粘贴方式都可以】")
+    print("  ✓ 只粘贴值：bfs7okhp1i31kvfcnom5f2f22t")
+    print("  ✓ 完整格式：PHPSESSID=bfs7okhp1i31kvfcnom5f2f22t")
+    print("  ✓ 整段Cookie：PHPSESSID=xxx; play_token=yyy; ...")
     print("-" * 50)
     
     cookies = input("请粘贴Cookie: ").strip()
     
     if not cookies:
-        print("Cookie不能为空")
+        print("❌ Cookie不能为空")
         input("按回车退出...")
         return
-    
-    # 检查是否包含PHPSESSID
-    if 'PHPSESSID' not in cookies:
-        print("⚠️  警告：Cookie中未找到PHPSESSID")
-        confirm = input("是否继续？(y/n): ").strip().lower()
-        if confirm != 'y':
-            return
     
     print()
     bot = TrainingCourseAutoComplete(cookies)
